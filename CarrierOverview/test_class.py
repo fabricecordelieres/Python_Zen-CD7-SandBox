@@ -1,6 +1,6 @@
 from CarrierOverview import CarrierOverview as co
 
-dir = '/Users/fab/Desktop/'
+dir = ''
 filename = 'CarrierOverview.czi'
 overview = co(dir, filename)
 
