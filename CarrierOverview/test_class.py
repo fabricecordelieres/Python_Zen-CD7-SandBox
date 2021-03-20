@@ -1,8 +1,8 @@
 from CarrierOverview import CarrierOverview as co
 
-dir = ''
-filename = 'CarrierOverview.czi'
-overview = co(dir, filename)
+input_dir = ''
+filename = 'CarrierOverview2.czi'
+overview = co(input_dir, filename)
 
 print('----- All metadata -----')
 print(overview)

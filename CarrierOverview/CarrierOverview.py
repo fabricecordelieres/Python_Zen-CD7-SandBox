@@ -1,5 +1,6 @@
 import czifile as czi  # Import of the czilib to read files: pip install czifile
 import cv2  # pip install opencv-python
+import math
 
 
 class CarrierOverview:
@@ -74,6 +75,9 @@ class CarrierOverview:
         self.metadata['SizeX_pixels'] = from_xml['Information']['Image']['SizeX']
         self.metadata['SizeY_pixels'] = from_xml['Information']['Image']['SizeY']
         self.metadata['SizeM'] = from_xml['Information']['Image']['SizeM']
+        self.metadata['EnhanceClipLimit'] = from_xml['DisplaySetting']['ToneMapping']['EnhanceClipLimit']
+        self.metadata['EnhanceRegionSizePercentage'] = from_xml['DisplaySetting']['ToneMapping'][
+            'EnhanceRegionSizePercentage']
 
         for element in from_xml['Scaling']['Items']['Distance']:
             self.metadata['Calib' + element['Id'] + '_microns'] = element['Value'] * 1000000.0
@@ -106,9 +110,26 @@ class CarrierOverview:
             Now the tile number has been extracted, get the stage coordinates and
             pushes to the metadata dictionary with a key in the form TileXX_parameterName_units
             '''
-
             for key, value in subBlock.metadata(raw=False)['Tags'].items():
-                self.metadata['Tile' + str(bloc_nb) + '_' + key + '_mm'] = value / 1000
+                self.metadata['Tile' + str(bloc_nb) + '_' + key + '_mm'] = value / 1000.0
+
+        '''
+        Quite tricky to recompute the stage coordinates of the central position...
+        First, computes the stage calibration from the two first tiles:
+            - Computes the slope delta positions in mm / delta positions in pixels.
+        '''
+        slope = (self.metadata['Tile1_StageXPosition_mm']-self.metadata['Tile0_StageXPosition_mm'])/(self.metadata['Tile1_X_start']-self.metadata['Tile0_X_start'])
+        slope = (int(slope * 10000)) / 10000 # limit to 4 digits because... it seems to work ;-)
+        '''
+        Second, computes the X/Y stage offset from the first tile:
+            - Slope*img_size/2: coordinate of the center of the image relative to the stage if the origin was top-let
+            - -start_coordinate: takes into account the offset of the stage (origin is not zero)
+            - +tile0_size/2*pixel_size: takes into account the fact that the coordinates are relative to the center of
+            the first tile, converting coordinates using the image calibration
+        '''
+        self.metadata['ImageCenterPosition_X_mm'] = slope*int(self.metadata['SizeX_pixels']/2) + self.metadata['Tile0_StageXPosition_mm'] - self.metadata['Tile0_X_stored_size']/2*self.metadata['CalibX_microns']/1000
+        self.metadata['ImageCenterPosition_X_mm'] = (int(self.metadata['ImageCenterPosition_X_mm'] * 100)) / 100 # limit to 2 digits
+        self.metadata['ImageCenterPosition_Y_mm'] = self.metadata['Tile1_StageYPosition_mm']
 
         czi_file.close()
 
