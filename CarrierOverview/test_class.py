@@ -1,6 +1,6 @@
 from CarrierOverview import CarrierOverview as co
 
-input_dir = ''
+input_dir = './datasets/'
 filename = 'CarrierOverview.czi'
 overview = co(input_dir, filename)
 
