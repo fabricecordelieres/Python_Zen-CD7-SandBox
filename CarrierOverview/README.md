@@ -16,4 +16,5 @@ They have been used in particular to decipher how the *_ImageCenterPosition_* ar
 |CarrierOverview3.czi|57.18|38|
 |CarrierOverview4.czi|57.23|38|
 |CarrierOverview5.czi|55.93|40|
+
 The positions' extraction still needs to be a bit retuned: works for the first 3 datasets, has a 1 digit discrepency on the second last ones.
