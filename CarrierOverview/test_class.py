@@ -1,7 +1,7 @@
 from CarrierOverview import CarrierOverview as co
 
 input_dir = ''
-filename = 'CarrierOverview2.czi'
+filename = 'CarrierOverview.czi'
 overview = co(input_dir, filename)
 
 print('----- All metadata -----')
@@ -29,5 +29,5 @@ for i in range(0, overview.metadata['SizeM']):
             output_string += str(overview.metadata['Tile' + str(i) + '_' + item]) + '\t'
     print(output_string)
 
-overview.save_image(dir, 'Output.tif')
+overview.save_image(input_dir, 'Output.tif')
 overview.show('Ceci est un titre')
