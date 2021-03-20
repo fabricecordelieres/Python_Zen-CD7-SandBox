@@ -127,8 +127,8 @@ class CarrierOverview:
             - +tile0_size/2*pixel_size: takes into account the fact that the coordinates are relative to the center of
             the first tile, converting coordinates using the image calibration
         '''
-        self.metadata['ImageCenterPosition_X_mm'] = slope*int(self.metadata['SizeX_pixels']/2) + self.metadata['Tile0_StageXPosition_mm'] - self.metadata['Tile0_X_stored_size']/2*self.metadata['CalibX_microns']/1000
-        self.metadata['ImageCenterPosition_X_mm'] = (int(self.metadata['ImageCenterPosition_X_mm'] * 100)) / 100 # limit to 2 digits
+        self.metadata['ImageCenterPosition_X_mm'] = slope*(self.metadata['SizeX_pixels']/2) + self.metadata['Tile0_StageXPosition_mm'] - (self.metadata['Tile0_X_stored_size']/2)*self.metadata['CalibX_microns']/1000
+        self.metadata['ImageCenterPosition_X_mm'] = int(self.metadata['ImageCenterPosition_X_mm']*100)/100
         self.metadata['ImageCenterPosition_Y_mm'] = self.metadata['Tile1_StageYPosition_mm']
 
         czi_file.close()
