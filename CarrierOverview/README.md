@@ -11,8 +11,8 @@ This class has two dependencies:
 They have been used in particular to decipher how the *_ImageCenterPosition_* are computed. Here are the exepected values:
 |Dataset|ImageCenterPosition_X_mm|ImageCenterPosition_Y_mm|
 |---|:---:|:---:|
-|CarrierOverview.czi|13.68|38|
-|CarrierOverview2.czi|13.73|38|
+|CarrierOverview.czi|13.73|38|
+|CarrierOverview2.czi|13.68|38|
 |CarrierOverview3.czi|57.18|38|
 |CarrierOverview4.czi|57.23|38|
 |CarrierOverview5.czi|55.93|40|
