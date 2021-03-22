@@ -2,9 +2,9 @@ import cv2  # pip install opencv-python
 import numpy as np
 
 
-class SlideCoverslipDetector:
+class ContainerCoverslipDetector:
     """
-    This class is aimed at finding the slides and coverslips from a CarrierOverview object
+    This class is aimed at finding the containers and coverslips from a CarrierOverview object
     """
 
     coo = ''
@@ -14,7 +14,7 @@ class SlideCoverslipDetector:
 
     def __init__(self, carrier_overview=''):
         """
-        Constructor: creates a new SlideCoverslipDetector object
+        Constructor: creates a new ContainerCoverslipDetector object
         :param carrier_overview: the CarrierOverview object to work on
         """
 
