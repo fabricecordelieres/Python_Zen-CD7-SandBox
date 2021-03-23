@@ -21,18 +21,25 @@ class ContainerCoverslipDetector:
         self.coo = carrier_overview
 
     def preprocess_image(self):
+        """
+        Performs image processing and stores results in class attributes mask:
+        - bilateral filter
+        - adaptive threshold
+        """
         img = self.coo.get_image()
+
+        # Generating mask
         bilateral_filter = cv2.bilateralFilter(img, 17, 9, 36)
         self.mask = cv2.adaptiveThreshold(bilateral_filter, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
                                           255, 0)
 
-    def find_containers(self, width=40, height=86, tolerance=0.05):
+    def find_containers(self, width=40, height=90, tolerance=0.05):
         """
         Performs containers detection: rectangle of user-defined width and height will be looked for,
         taking into account the input tolerance (values +/- the tolerance in percents). It returns a dictionary
         containing the found containers and appends them to the self.container class attribute (list).
         :param width: the expected container width in mm (default value: 40mm, corresponding to the 3 slides holder)
-        :param height: the expected container height in mm (default value: 86mm, corresponding to the 3 slides holder)
+        :param height: the expected container height in mm (default value: 90mm, corresponding to the 3 slides holder)
         :param tolerance: tolerance for dimensions expressed in percents (default value: 0.05)
         :return a dictionary containing the found containers
         """
@@ -99,12 +106,12 @@ class ContainerCoverslipDetector:
 
         return out
 
-    def find_circular_coverslips_in_containers(self, width_container=40, height_container=86, tolerance_container=0.05, diameter_coverslip=18, tolerance_coverslip=0.1):
+    def find_circular_coverslips_in_containers(self, width_container=40, height_container=90, tolerance_container=0.05, diameter_coverslip=18, tolerance_coverslip=0.1):
         """
         Performs coverslips detection: rectangle of user-defined diameter will be looked for,
         taking into account the input tolerance (values +/- the tolerance in percents)
         :param width_container: the expected container width in mm (default value: 40mm, corresponding to the 3 slides holder)
-        :param height_container: the expected container height in mm (default value: 86mm, corresponding to the 3 slides holder)
+        :param height_container: the expected container height in mm (default value: 90mm, corresponding to the 3 slides holder)
         :param tolerance_container: tolerance for dimensions expressed in percents (default value: 0.05)
         :param diameter_coverslip: the expected circular coverslip's diameter in mm (default value: 18mm)
         :param tolerance_coverslip: tolerance for dimensions expressed in percents (default value: 0.1)
@@ -164,6 +171,15 @@ class ContainerCoverslipDetector:
     def test_detect(self):
         img = self.coo.get_image()
         img_out = cv2.cvtColor(img.copy(), cv2.COLOR_GRAY2RGB)
+
+        # -------Test Gamma
+        gamma = 0.5
+        lookUpTable = np.empty((1, 256), np.uint8)
+        for i in range(256):
+            lookUpTable[0, i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+        img = cv2.LUT(img, lookUpTable)
+
+
         bilateral_filter = cv2.bilateralFilter(img, 17, 9, 36)
         adaptive_thr = cv2.adaptiveThreshold(bilateral_filter, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,
                                              255, 0)
