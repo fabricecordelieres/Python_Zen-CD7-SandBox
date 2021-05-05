@@ -16,7 +16,7 @@ print(image.dtype)
 print(image.shape)
 
 # Formules issues de  http://devernay.free.fr/cours/vision/pdf/c3.pdf
-filter_radius = 64
+filter_radius = 24
 alpha = 0.35
 
 # ------------------------ LISSAGE ------------------------
@@ -73,15 +73,19 @@ fig = plt.figure()
 
 ax1 = fig.add_subplot(3, 2, 1)
 ax1.title.set_text('Original image')
+ax1.axis('off')
 ax1.imshow(image)
 ax2 = fig.add_subplot(3, 2, 2)
-ax2.title.set_text('Convolved along XY')
+ax2.title.set_text('Smooth, a='+str(alpha)+" rad="+str(filter_radius))
+ax2.axis('off')
 ax2.imshow(convolve_xy)
 ax3 = fig.add_subplot(3, 2, 3)
 ax3.title.set_text('Derivative')
+ax3.axis('off')
 ax3.imshow(convolve_der_xy)
 ax4 = fig.add_subplot(3, 2, 4)
 ax4.title.set_text('Diff (deriv-img)/img')
+ax4.axis('off')
 ax4.imshow(delta_xy)
 
 ax5 = fig.add_subplot(3, 2, 5)
