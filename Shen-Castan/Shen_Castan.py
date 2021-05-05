@@ -2,6 +2,7 @@
 from matplotlib import image
 from matplotlib import pyplot as plt
 import numpy as np
+from PIL import Image
 
 img_path = "Experiment-118-cut4.tiff"
 
@@ -9,10 +10,6 @@ img_path = "Experiment-118-cut4.tiff"
 image = image.imread(img_path)
 
 image = np.dot(image[..., :3], [0.299, 0.587, 0.114])  # Convert RGB to Grays
-
-# summarize shape of the pixel array
-print(image.dtype)
-print(image.shape)
 
 # Formules issues de http://devernay.free.fr/cours/vision/pdf/c3.pdf
 filter_radius = 24
@@ -24,7 +21,6 @@ c = (1 - np.exp(-alpha)) / (1 + np.exp(-alpha))
 kernel_fct = (lambda c_param, alpha_param, x_param: c_param * np.exp(-alpha_param * np.fabs(x_param)))
 for x in range(-filter_radius, filter_radius + 1, 1):
     kernel_liss[x + filter_radius] = kernel_fct(c, alpha, x)
-print(kernel_liss)
 
 # Convolve x only
 convolve_x = []
@@ -48,8 +44,6 @@ d = 1 - np.exp(-alpha)
 kernel_fct = (lambda d_param, alpha_param, x_param: d_param * np.exp(-alpha_param * np.fabs(x_param)) if x_param>=0 else -d_param * np.exp(-alpha_param * np.fabs(x_param)))
 for x in range(-filter_radius, filter_radius + 1, 1):
     kernel_der[x + filter_radius] = kernel_fct(d, alpha, x)
-
-print(kernel_der)
 
 # Convolve x only
 convolve_der_x = []
@@ -96,3 +90,6 @@ ax6.title.set_text('Kernel derivatif')
 ax6.plot(range(-filter_radius, filter_radius + 1, 1), kernel_der)
 
 plt.show()
+
+im = Image.fromarray(convolve_der_xy)
+im.save('export_a='+str(alpha)+'_rad='+str(filter_radius)+'.tif')
