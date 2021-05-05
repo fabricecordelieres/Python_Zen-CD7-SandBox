@@ -2,7 +2,6 @@
 from matplotlib import image
 from matplotlib import pyplot as plt
 import numpy as np
-import math as math
 
 img_path = "Experiment-118-cut4.tiff"
 
@@ -17,12 +16,12 @@ print(image.shape)
 
 # Formules issues de  http://devernay.free.fr/cours/vision/pdf/c3.pdf
 filter_radius = 24
-alpha = 0.35
+alpha = 0.5
 
 # ------------------------ LISSAGE ------------------------
 kernel_liss = np.zeros((filter_radius * 2 + 1))
-c = (1 - math.exp(-alpha)) / (1 + math.exp(-alpha))
-kernel_fct = (lambda c_param, alpha_param, x_param: c_param * math.exp(-alpha_param * math.fabs(x_param)))
+c = (1 - np.exp(-alpha)) / (1 + np.exp(-alpha))
+kernel_fct = (lambda c_param, alpha_param, x_param: c_param * np.exp(-alpha_param * np.fabs(x_param)))
 for x in range(-filter_radius, filter_radius + 1, 1):
     kernel_liss[x + filter_radius] = kernel_fct(c, alpha, x)
 print(kernel_liss)
@@ -45,8 +44,8 @@ convolve_xy = np.transpose(convolve_xy)
 
 # ------------------------ DERIVATIF ------------------------
 kernel_der = np.zeros((filter_radius * 2 + 1))
-d = 1 - math.exp(-alpha)
-kernel_fct = (lambda d_param, alpha_param, x_param: d_param * math.exp(-alpha_param * np.fabs(x_param)) if x_param>=0 else -d_param * math.exp(-alpha_param * np.fabs(x_param)))
+d = 1 - np.exp(-alpha)
+kernel_fct = (lambda d_param, alpha_param, x_param: d_param * np.exp(-alpha_param * np.fabs(x_param)) if x_param>=0 else -d_param * np.exp(-alpha_param * np.fabs(x_param)))
 for x in range(-filter_radius, filter_radius + 1, 1):
     kernel_der[x + filter_radius] = kernel_fct(d, alpha, x)
 
