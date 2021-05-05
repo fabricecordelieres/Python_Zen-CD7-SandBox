@@ -14,7 +14,7 @@ image = np.dot(image[..., :3], [0.299, 0.587, 0.114])  # Convert RGB to Grays
 print(image.dtype)
 print(image.shape)
 
-# Formules issues de  http://devernay.free.fr/cours/vision/pdf/c3.pdf
+# Formules issues de http://devernay.free.fr/cours/vision/pdf/c3.pdf
 filter_radius = 24
 alpha = 0.5
 
