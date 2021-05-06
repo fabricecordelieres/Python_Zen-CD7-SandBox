@@ -45,18 +45,19 @@ def convolve_2d(img, kernel, dir='xy'):
 
 
 # ------------------------ 2D CONVOLUTION ------------------------
-
-
-img_path = "Experiment-118-cut4.tiff"
+img_path = "Experiment-118-cut4.tif"
 
 # load image as pixel array
 image = image.imread(img_path)
+image_original = image.copy();
 
 image = np.dot(image[..., :3], [0.299, 0.587, 0.114])  # Convert RGB to Grays
 
-# Formules issues de http://devernay.free.fr/cours/vision/pdf/c3.pdf
+#image = np.log(image+0.000000001)
+
+# Formulas from http://devernay.free.fr/cours/vision/pdf/c3.pdf
 filter_radius = 64
-alpha = 0.125
+alpha = 0.5
 
 # ------------------------ SMOOTHING ------------------------
 kernel_smooth = np.zeros((filter_radius * 2 + 1))
@@ -78,42 +79,52 @@ for x in range(-filter_radius, filter_radius + 1, 1):
 convolve_der_x = convolve_2d(convolve_smooth, kernel_der, 'x')
 convolve_der_y = convolve_2d(convolve_smooth, kernel_der, 'y')
 
-convolve_der_xy = np.sqrt(np.square(convolve_der_x)+np.square(convolve_der_y))
+convolve_der_xy_amplitude = np.sqrt(np.square(convolve_der_x) + np.square(convolve_der_y))
+
+convolve_der_xy_orientation = np.arctan2(convolve_der_y, convolve_der_x)
 
 # ------------------------ FIGURE ------------------------
-fig = plt.figure()
+fig = plt.figure(figsize=(8.25, 11.75))
 
-ax1 = fig.add_subplot(2, 3, 1)
+ax1 = fig.add_subplot(4, 2, 1)
 ax1.title.set_text('Original image')
 ax1.axis('off')
-ax1.imshow(image)
+ax1.imshow(image_original)
 
-ax2 = fig.add_subplot(2, 3, 2)
+ax2 = fig.add_subplot(4, 2, 2)
 ax2.title.set_text('Smooth, a=' + str(alpha) + " rad=" + str(filter_radius))
 ax2.axis('off')
 ax2.imshow(convolve_smooth)
 
-ax3 = fig.add_subplot(2, 3, 4)
+ax3 = fig.add_subplot(4, 2, 3)
 ax3.title.set_text('Derivative X')
 ax3.axis('off')
 ax3.imshow(convolve_der_x)
 
-ax4 = fig.add_subplot(2, 3, 5)
+ax4 = fig.add_subplot(4, 2, 4)
 ax4.title.set_text('Derivative Y')
 ax4.axis('off')
 ax4.imshow(convolve_der_y)
 
-ax5 = fig.add_subplot(2, 3, 6)
-ax5.title.set_text('Derivative XY')
+ax5 = fig.add_subplot(4, 2, 5)
+ax5.title.set_text('Derivative XY\nAmplitude')
 ax5.axis('off')
-ax5.imshow(convolve_der_xy)
+ax5.imshow(convolve_der_xy_amplitude)
 
-ax6 = fig.add_subplot(2, 3, 3)
-ax6.title.set_text('Kernels')
-ax6.plot(range(-filter_radius, filter_radius + 1, 1), kernel_smooth, 'r-')
-ax6.plot(range(-filter_radius, filter_radius + 1, 1), kernel_der, 'b*')
+ax5 = fig.add_subplot(4, 2, 6)
+ax5.title.set_text('Derivative XY\nOrientation')
+ax5.axis('off')
+ax5.imshow(convolve_der_xy_orientation)
+
+ax7 = fig.add_subplot(4, 2, 7)
+ax7.title.set_text('Kernel smoothing')
+ax7.plot(range(-filter_radius, filter_radius + 1, 1), kernel_smooth)
+
+ax8 = fig.add_subplot(4, 2, 8)
+ax8.title.set_text('Kernel derivative')
+ax8.plot(range(-filter_radius, filter_radius + 1, 1), kernel_der)
 
 plt.show()
 
-im = Image.fromarray(convolve_der_xy)
+im = Image.fromarray(convolve_der_xy_amplitude)
 im.save('export_a=' + str(alpha) + '_rad=' + str(filter_radius) + '.tif')
