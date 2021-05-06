@@ -24,7 +24,7 @@ ax2.axis('off')
 ax2.imshow(filtered_img)
 
 ax3 = fig.add_subplot(2, 2, 3)
-ax3.title.set_text('Filtered - blurred image')
+ax3.title.set_text('Filtered image - blurred')
 ax3.axis('off')
 ax3.imshow(corrected_img)
 
