@@ -45,7 +45,7 @@ def convolve_2d(img, kernel, dir='xy'):
 
 
 # ------------------------ 2D CONVOLUTION ------------------------
-img_path = "Experiment-118-cut4.tif"
+img_path = "Experiment-118-cut4.tiff"
 
 # load image as pixel array
 image = image.imread(img_path)
@@ -57,7 +57,7 @@ image = np.dot(image[..., :3], [0.299, 0.587, 0.114])  # Convert RGB to Grays
 
 # Formulas from http://devernay.free.fr/cours/vision/pdf/c3.pdf
 filter_radius = 64
-alpha = 0.5
+alpha = 0.25
 
 # ------------------------ SMOOTHING ------------------------
 kernel_smooth = np.zeros((filter_radius * 2 + 1))
