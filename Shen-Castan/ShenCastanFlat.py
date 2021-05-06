@@ -1,5 +1,5 @@
 # load and display an image with Matplotlib
-import matplotlib
+import statistics
 from matplotlib import image
 from matplotlib import pyplot as plt
 import numpy as np
@@ -60,8 +60,9 @@ class ShenCastanFlat:
         kernel_fct = (lambda c_param, alpha_param, x_param: c_param * np.exp(-alpha_param * np.fabs(x_param)))
         for x in range(-filter_radius, filter_radius + 1, 1):
             self.kernel_smooth[x + filter_radius] = kernel_fct(c, alpha, x)
-            if -flat_radius <= x <= flat_radius:
-                self.kernel_smooth[x + filter_radius] = kernel_fct(c, alpha, 0)
+
+        # Squares the center while keeping the normalisation
+        self.kernel_smooth[filter_radius-flat_radius:filter_radius+flat_radius]=statistics.mean(self.kernel_smooth[filter_radius-flat_radius:filter_radius+flat_radius])
 
         self.convolve_smooth = self.convolve_2d(self.input_image, self.kernel_smooth, 'xy')
 

@@ -4,39 +4,42 @@ import numpy as np
 import ShenCastanFlat as filter
 from scipy.ndimage.filters import gaussian_filter
 from matplotlib import pyplot as plt
+import statistics
 import cv2
 
 img = 'Experiment-118-cut4.tiff'
 filtering_engine = filter.ShenCastanFlat(img)
 
 filtered_img = filtering_engine.filter(alpha=0.8, flat_radius=4, filter_radius=64)
+filtering_engine.show_process('./img/')
+
 gaussian_img = gaussian_filter(filtered_img, sigma=16)
 corrected_img = filtered_img / gaussian_img
 binary_img = np.where(corrected_img < 0.8, 1, 0)
 
-fig = plt.figure(figsize=(8.25, 11.75))
-
-ax1 = fig.add_subplot(2, 2, 1)
-ax1.title.set_text('Original image')
-ax1.axis('off')
-ax1.imshow(filtering_engine.input_image)
-
-ax2 = fig.add_subplot(2, 2, 2)
-ax2.title.set_text('Filtered image')
-ax2.axis('off')
-ax2.imshow(filtered_img)
-
-ax3 = fig.add_subplot(2, 2, 3)
-ax3.title.set_text('Filtered - blurred image')
-ax3.axis('off')
-ax3.imshow(corrected_img)
-
-ax4 = fig.add_subplot(2, 2, 4)
-ax4.title.set_text('Mask image')
-ax4.axis('off')
-ax4.imshow(binary_img)
-
-plt.show()
+# fig = plt.figure(figsize=(8.25, 11.75))
+#
+# ax1 = fig.add_subplot(2, 2, 1)
+# ax1.title.set_text('Original image')
+# ax1.axis('off')
+# ax1.imshow(filtering_engine.input_image)
+#
+# ax2 = fig.add_subplot(2, 2, 2)
+# ax2.title.set_text('Filtered image')
+# ax2.axis('off')
+# ax2.imshow(filtered_img)
+#
+# ax3 = fig.add_subplot(2, 2, 3)
+# ax3.title.set_text('Filtered - blurred image')
+# ax3.axis('off')
+# ax3.imshow(corrected_img)
+#
+# ax4 = fig.add_subplot(2, 2, 4)
+# ax4.title.set_text('Mask image')
+# ax4.axis('off')
+# ax4.imshow(binary_img)
+#
+# plt.show()
 
 mask = cv2.normalize(src=binary_img, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 ori = cv2.normalize(src=filtering_engine.input_image, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
@@ -63,9 +66,24 @@ lines = cv2.HoughLines(mask, 1, np.pi / 180, 150, None, 0, 0)
 linesP = cv2.HoughLinesP(mask, 1, np.pi / 180, 64, None, 50, 10)
 
 if linesP is not None:
+    dist = []
+    angle = []
     for i in range(0, len(linesP)):
         l = linesP[i][0]
-        cv2.line(ori, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 3, cv2.LINE_AA)
+        dist.append(math.dist((l[0], l[1]), (l[2], l[3])))
+        angle.append(math.atan2(l[3]-l[1], l[2]-l[0]))
+    med_dist = statistics.median(dist)
+    med_angle = math.fabs(statistics.median(angle))
+    print(med_dist)
+    print(med_angle)
+
+    for i in range(0, len(linesP)):
+        l = linesP[i][0]
+        length = math.dist((l[0], l[1]), (l[2], l[3]))
+        angle = math.atan2(l[3]-l[1], l[2]-l[0])
+
+        if med_dist*0.25 <length <med_dist*1.75 and med_angle*0.25<math.fabs(angle)<med_angle*1.75:
+            cv2.line(ori, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 3, cv2.LINE_AA)
 
 cv2.imshow("Detections", ori)
 cv2.waitKey(0)
